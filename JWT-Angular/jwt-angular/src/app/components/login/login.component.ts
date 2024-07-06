@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';  
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoginResponse } from 'src/app/modal/modal.LoginResponse';
 import { Register } from 'src/app/modal/modal.component';
 import { JwtRegisterService } from 'src/app/service/jwt/jwt.component';
@@ -14,17 +14,27 @@ export class LoginComponent implements OnInit{
 
   loginForm!: FormGroup;
   l_objRegisterModal: Register = new Register();
+  redirected: boolean = false;
 
   constructor(
     private g_objJwtRegisterService: JwtRegisterService,
     private fb: FormBuilder,
-    private router: Router 
+    private router: Router,
+    private route: ActivatedRoute 
   ) { }
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required,Validators.email]],
       password: ['', [Validators.required]],
+    });
+
+    // Check if redirected from a protected route
+    this.route.queryParams.subscribe(params => {
+      if (params['redirected']) {
+        this.redirected = true;
+        alert('Please log in to access the dashboard.');
+      }
     });
   }
 
@@ -57,7 +67,7 @@ export class LoginComponent implements OnInit{
     if (this.loginForm.valid) {
       this.g_objJwtRegisterService.login(this.loginForm.value).subscribe(
         (response: LoginResponse) => {
-          console.log('API Response:', response); // Log the entire response
+          console.log('API Response:', response); 
 
           
           const jwtToken = response.jwtToken; 

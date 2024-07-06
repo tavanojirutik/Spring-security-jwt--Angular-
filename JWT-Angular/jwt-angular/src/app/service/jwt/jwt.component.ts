@@ -45,7 +45,6 @@ export class JwtRegisterService {
     );
   }
 
-  // Modified to return HttpHeaders
   private createAuthorizationHeader(): HttpHeaders {
     const jwtToken = localStorage.getItem('jwt');
     let headers = new HttpHeaders();
@@ -57,6 +56,11 @@ export class JwtRegisterService {
       console.log('JWT Token Not Found In Local Storage!');
     }
     return headers;
+  }
+
+
+  logout(): void {
+    localStorage.removeItem('jwt');
   }
 
 }
